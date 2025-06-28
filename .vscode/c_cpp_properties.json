@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "compilerArgs": [
+                "-Wall",
+                "-Wextra",
+                "-Og",
+                "-g"
+            ]
+        }
+    ],
+    "version": 4
+}
