@@ -1,21 +1,11 @@
 #include <sys/socket.h>
-#include <arpa/inet.h>
+#include <arpa/inet.h> // sockaddr_in and s_addr
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-
-struct TInAddr {
-    uint32_t sAddr;
-};
-
-struct TSockAddrIn {
-    uint16_t          sinFamily;
-    uint16_t          sinPort;
-    struct TInAddr    sinAddr;
-};
 
 static void Die(char * msg){
     int err = errno;
@@ -51,13 +41,14 @@ int main() {
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
 
     // Create a socket address
-    struct TSockAddrIn addr = {};
-    addr.sinFamily = AF_INET;
-    addr.sinPort = htons(1234);
-    addr.sinAddr.sAddr = htonl(INADDR_ANY);
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(1234);
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     // Bind to socket address
-    int failed = bind(fd, (const struct sockaddr*) &addr, sizeof(addr));
+    int failed = bind(fd, (const sockaddr *) &addr, sizeof(addr));
     if (failed) { Die("bind()"); }
 
     // Listen to socket address
@@ -66,9 +57,9 @@ int main() {
 
     while (true) {
         // Accept 
-        struct TSockAddrIn clientAddr = {};
+        struct sockaddr_in clientAddr = {};
         socklen_t addrLen = sizeof(clientAddr);
-        int connFd = accept(fd, (struct sockaddr * ) &clientAddr, &addrLen);
+        int connFd = accept(fd, (sockaddr * ) &clientAddr, &addrLen);
         if (connFd < 0) { continue; }
 
         //Do Something
